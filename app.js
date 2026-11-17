@@ -382,6 +382,5 @@
   $("#closeHelp").addEventListener("click", () => $("#helpDialog").close());
   $("#gotIt").addEventListener("click", () => $("#helpDialog").close());
 
-  renderInstruments();
-  updatePads();
+  selectInstrument(state.instrument);
 })();
