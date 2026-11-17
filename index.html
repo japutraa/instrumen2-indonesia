@@ -19,7 +19,7 @@
           <span>instrumen<span class="brand-two">2</span></span>
         </a>
         <div class="topbar-right">
-          <span class="live-dot"></span><span class="engine-label">WEB AUDIO · FM ENGINE</span>
+          <span class="live-dot"></span><span class="engine-label">WEB AUDIO · SOUND SYNTHESIS</span>
           <button class="icon-button help-button" id="helpButton" aria-label="Cara menggunakan" title="Cara menggunakan">?</button>
         </div>
       </header>
@@ -27,7 +27,7 @@
       <section class="intro">
         <div class="eyebrow">RUANG BUNYI NUSANTARA <span>—</span> 01</div>
         <h1>Tradisi yang<br /><em>beresonansi.</em></h1>
-        <p>Jelajahi bunyi instrumen Indonesia. Setiap nada dibentuk langsung di browser dengan sintesis FM—tanpa sampel, tanpa instalasi.</p>
+        <p>Jelajahi bunyi instrumen Indonesia. Setiap suara dibentuk langsung di browser dengan sintesis bunyi—tanpa sampel, tanpa instalasi.</p>
       </section>
 
       <section class="instrument-section" aria-labelledby="instrument-heading">
@@ -48,9 +48,9 @@
           <div class="tuning-control">
             <label for="scaleSelect">LARAS</label>
             <select id="scaleSelect" aria-label="Pilih laras">
+              <option value="diatonic" selected>Diatonis</option>
               <option value="slendro">Slendro</option>
               <option value="pelog">Pelog</option>
-              <option value="diatonic">Diatonis</option>
             </select>
           </div>
         </div>
@@ -66,18 +66,18 @@
           <div class="octave-control"><button id="octaveDown" class="step-button" aria-label="Turunkan oktaf">−</button><span><small>OKTAF</small><b id="octaveValue">4</b></span><button id="octaveUp" class="step-button" aria-label="Naikkan oktaf">+</button></div>
         </div>
         <div class="keyboard" id="keyboard" aria-label="Delapan pad nada"></div>
-        <div class="play-footer"><span><span class="hint-dot"></span> Klik dan tahan untuk nada berkelanjutan</span><span id="audioStatus">AUDIO SIAP</span></div>
+        <div class="play-footer"><span><span class="hint-dot"></span> Tahan angklung untuk kurulung · instrumen lain berbunyi sekali tiap sentuhan</span><span id="audioStatus">AUDIO SIAP</span></div>
       </section>
 
-      <footer class="footer"><span>BUATAN UNTUK MENJELAJAHI BUNYI NUSANTARA</span><span>FM SYNTHESIS <i>×</i> WEB AUDIO API</span></footer>
+      <footer class="footer"><span>BUATAN UNTUK MENJELAJAHI BUNYI NUSANTARA</span><span>SINTESIS SUARA <i>×</i> WEB AUDIO API</span></footer>
     </main>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <dialog id="helpDialog" class="help-dialog">
       <button class="dialog-close" id="closeHelp" aria-label="Tutup">×</button>
       <div class="eyebrow">MULAI BERMAIN</div><h2>Sentuh bunyinya.</h2>
-      <p>Pilih instrumen, lalu mainkan pad dengan mouse, layar sentuh, atau tombol <kbd>A</kbd> sampai <kbd>K</kbd>. Untuk angklung, tahan pad untuk mengulang goyangan; instrumen lain bisa ditahan untuk memperpanjang nada. Gunakan tombol panah untuk mengubah oktaf.</p>
-      <p>Audio dimulai setelah interaksi pertama—aturan keamanan browser. Pilihan laras mengubah jarak antar nada; suara seluruhnya disintesis saat dimainkan.</p>
+      <p>Pilih instrumen, lalu mainkan pad dengan mouse, layar sentuh, atau tombol <kbd>A</kbd> sampai <kbd>K</kbd>. Untuk angklung, tahan pad untuk memainkan kurulung; instrumen lain memetik atau memukul satu nada. Gunakan tombol panah untuk mengubah oktaf.</p>
+      <p>Audio dimulai setelah interaksi pertama—aturan keamanan browser. Diatonis menjadi laras awal; Slendro dan Pelog bisa dipilih kapan saja. Bunyi disintesis saat dimainkan.</p>
       <button class="dialog-action" id="gotIt">MENGERTI <span>↗</span></button>
     </dialog>
     <script src="./app.js" defer></script>
