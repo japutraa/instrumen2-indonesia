@@ -21,13 +21,24 @@ Then visit <http://localhost:8000>. The browser starts audio after the first use
 
 ## Instruments
 
-- **Angklung** — a bamboo inspired FM voice with a brief breathy rattle.
+- **Angklung** — two coupled, struck bamboo resonators, synthesized with FM, a short impact, an octave pair, and separate natural decays. Hold a pad to repeat the shake.
 - **Bonang** — a rounded gong voice with inharmonic partials and a long resonant tail.
 - **Saron** — a bright, struck metal bar voice.
 - **Gangsa Bali** — a brighter metal voice with a stronger beating shimmer.
 - **Kacapi Sunda** — a plucked, string-like FM voice.
 
 These are original synthesized interpretations, not recordings or exact replicas of specific instruments or regional tuning systems. Slendro and Pelog are offered as playable approximations.
+
+### Angklung sound model
+
+The angklung patch uses two resonant tube voices: a lower note and a second resonance near the octave. Each shake starts with a short bamboo-like impact and the tube voices ring out with different decay times. Holding a pad repeats the paired impacts. FM adds a restrained, changing edge to the tube resonances; it is not a sustained keyboard tone.
+
+This is a synthesis approximation, not a recording. The sound is based on published acoustic descriptions of paired bamboo rattle tubes, their coupled pitch peaks, short impacts, and prominent partials:
+
+- [Hamdan et al., “Study on Vibro-acoustic Characteristics of Bamboo-based Angklung Instrument” (2022)](https://doi.org/10.15376/biores.17.1.1670-1679)
+- [Haron et al., “Synthesizing an Angklung” (2018)](https://doi.org/10.1166/asl.2018.11219)
+- [Arifin & Pribadi, “Modeling of angklung to determine its pitch frequency” (2019)](https://doi.org/10.1250/ast.40.178)
+- [UNESCO: Indonesian Angklung](https://ich.unesco.org/en/RL/angklung-00393)
 
 ## Deploy on GitHub Pages
 
