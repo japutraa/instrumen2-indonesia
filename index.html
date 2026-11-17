@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101714" />
+    <meta name="description" content="Mainkan instrumen tradisional Indonesia dengan suara FM synthesis langsung di browser." />
+    <title>Instrumen2 — Indonesian Virtual Instruments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Instrumen2 beranda">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span>instrumen<span class="brand-two">2</span></span>
+        </a>
+        <div class="topbar-right">
+          <span class="live-dot"></span><span class="engine-label">WEB AUDIO · FM ENGINE</span>
+          <button class="icon-button help-button" id="helpButton" aria-label="Cara menggunakan" title="Cara menggunakan">?</button>
+        </div>
+      </header>
+
+      <section class="intro">
+        <div class="eyebrow">RUANG BUNYI NUSANTARA <span>—</span> 01</div>
+        <h1>Tradisi yang<br /><em>beresonansi.</em></h1>
+        <p>Jelajahi bunyi instrumen Indonesia. Setiap nada dibentuk langsung di browser dengan sintesis FM—tanpa sampel, tanpa instalasi.</p>
+      </section>
+
+      <section class="instrument-section" aria-labelledby="instrument-heading">
+        <div class="section-heading">
+          <div><div class="eyebrow">PILIH INSTRUMEN</div><h2 id="instrument-heading">Koleksi bunyi</h2></div>
+          <span class="collection-count">05 INSTRUMEN</span>
+        </div>
+        <div class="instrument-list" id="instrumentList" role="tablist" aria-label="Pilih instrumen"></div>
+      </section>
+
+      <section class="play-section" aria-label="Area bermain">
+        <div class="instrument-info">
+          <div class="instrument-title-wrap">
+            <div class="instrument-kicker" id="instrumentRegion">JAWA BARAT · BAMBU</div>
+            <h2 id="instrumentName">Angklung</h2>
+            <p id="instrumentDescription">Bambu yang digetarkan, dengan gemerisik lembut di ujung nada.</p>
+          </div>
+          <div class="tuning-control">
+            <label for="scaleSelect">LARAS</label>
+            <select id="scaleSelect" aria-label="Pilih laras">
+              <option value="slendro">Slendro</option>
+              <option value="pelog">Pelog</option>
+              <option value="diatonic">Diatonis</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="instrument-art" id="instrumentArt" aria-hidden="true">
+          <div class="art-glow"></div><div class="art-lines"></div>
+          <span class="art-caption" id="artCaption">BAMBU · GETAR · NADA</span>
+          <span class="art-number" id="artNumber">01</span>
+        </div>
+
+        <div class="keyboard-header">
+          <div><div class="eyebrow">PAPAN NADA</div><span class="keyboard-hint">Ketuk pad atau gunakan tombol <kbd>A</kbd>—<kbd>K</kbd></span></div>
+          <div class="octave-control"><button id="octaveDown" class="step-button" aria-label="Turunkan oktaf">−</button><span><small>OKTAF</small><b id="octaveValue">4</b></span><button id="octaveUp" class="step-button" aria-label="Naikkan oktaf">+</button></div>
+        </div>
+        <div class="keyboard" id="keyboard" aria-label="Delapan pad nada"></div>
+        <div class="play-footer"><span><span class="hint-dot"></span> Klik dan tahan untuk nada berkelanjutan</span><span id="audioStatus">AUDIO SIAP</span></div>
+      </section>
+
+      <footer class="footer"><span>BUATAN UNTUK MENJELAJAHI BUNYI NUSANTARA</span><span>FM SYNTHESIS <i>×</i> WEB AUDIO API</span></footer>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <dialog id="helpDialog" class="help-dialog">
+      <button class="dialog-close" id="closeHelp" aria-label="Tutup">×</button>
+      <div class="eyebrow">MULAI BERMAIN</div><h2>Sentuh bunyinya.</h2>
+      <p>Pilih instrumen, lalu mainkan pad dengan mouse, layar sentuh, atau tombol <kbd>A</kbd> sampai <kbd>K</kbd>. Tahan tombol untuk menahan nada. Gunakan tombol panah untuk mengubah oktaf.</p>
+      <p>Audio dimulai setelah interaksi pertama—aturan keamanan browser. Pilihan laras mengubah jarak antar nada; suara seluruhnya disintesis saat dimainkan.</p>
+      <button class="dialog-action" id="gotIt">MENGERTI <span>↗</span></button>
+    </dialog>
+    <script src="./app.js" defer></script>
+  </body>
+</html>
