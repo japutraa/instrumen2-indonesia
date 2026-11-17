@@ -2,7 +2,7 @@
   "use strict";
 
   const instruments = [
-    { id: "angklung", name: "Angklung", short: "Bambu", region: "JAWA BARAT · BAMBU", description: "Bambu yang digetarkan, dengan gemerisik lembut di ujung nada.", caption: "BAMBU · GETAR · NADA", color: "#c6e779", family: "bamboo", ratio: 1.41, index: 2.22, modulation: 2.9, decay: 1.05, release: .55, brightness: .44, noise: .12, beat: .012, volume: .27 },
+    { id: "angklung", name: "Angklung", short: "Bambu · dua tabung", region: "JAWA BARAT · BAMBU", description: "Dua resonator bambu dengan benturan singkat, nada berpasangan, dan ekor yang meluruh alami.", caption: "DUA TABUNG · GETAR · BAMBU", color: "#c6e779", family: "bamboo", ratio: 1.41, index: 2.22, modulation: 2.9, decay: 1.05, release: .55, brightness: .44, noise: .12, beat: .012, volume: .27 },
     { id: "bonang", name: "Bonang", short: "Gamelan Jawa", region: "JAWA TENGAH · PERUNGGU", description: "Gong kecil dengan pukulan bulat dan gema berlapis.", caption: "PERUNGGU · GONG · GEMA", color: "#e2b967", family: "gong", ratio: 1.38, index: 2.7, modulation: 4.4, decay: 2.3, release: 1.05, brightness: .67, noise: .04, beat: .018, volume: .28 },
     { id: "saron", name: "Saron", short: "Gamelan Jawa", region: "JAWA TENGAH · BILAH", description: "Bilah perunggu yang jernih, tegas, dan berkilau panjang.", caption: "BILAH · PERUNGGU · PULSA", color: "#d1ee74", family: "metal", ratio: 2.01, index: 3.1, modulation: 3.25, decay: 1.15, release: .48, brightness: .75, noise: .035, beat: .01, volume: .24 },
     { id: "bali", name: "Gangsa Bali", short: "Gamelan Bali", region: "BALI · BILAH PERUNGGU", description: "Nada gangsa yang terang dengan dengung dan denyut khas Bali.", caption: "BALI · KILAU · DENYUT", color: "#edbd65", family: "metal", ratio: 2.43, index: 3.8, modulation: 5.1, decay: .78, release: .3, brightness: .92, noise: .045, beat: .03, volume: .24 },
@@ -45,6 +45,9 @@
     $("#artCaption").textContent = instrument.caption;
     $("#instrumentArt").dataset.instrument = instrument.id;
     $("#artNumber").textContent = `0${instruments.indexOf(instrument) + 1}`;
+    $("#keyboardHint").innerHTML = instrument.family === "bamboo"
+      ? `Ketuk untuk satu goyangan · tahan untuk mengulang <kbd>A</kbd>—<kbd>K</kbd>`
+      : `Klik dan tahan pad atau gunakan tombol <kbd>A</kbd>—<kbd>K</kbd>`;
     updatePads();
   }
 
@@ -124,7 +127,11 @@
     const instrument = state.instrument;
     const note = getNote(index);
     const now = context.currentTime;
-    const voice = { nodes: [], released: false };
+    if (instrument.family === "bamboo") {
+      startAngklung(index, voiceId, note, instrument, audio);
+      return;
+    }
+    const voice = { nodes: [], released: false, release: instrument.release };
     const base = context.createGain();
     base.gain.value = instrument.volume;
     base.connect(master);
@@ -199,6 +206,94 @@
     $("#audioStatus").textContent = `${freq} HZ · AKTIF`;
   }
 
+  // Angklung is modeled as a struck, coupled pair of bamboo tube resonators.
+  // FM adds a small moving edge to each tube; inharmonic modes and two short
+  // impacts keep it from behaving like a held keyboard oscillator.
+  function startAngklung(index, voiceId, note, instrument, audio) {
+    const { context, master } = audio;
+    const bus = context.createGain();
+    bus.gain.value = .53;
+    bus.connect(master);
+    const voice = { nodes: [bus], released: false, release: instrument.release, timer: null };
+    state.voices.set(voiceId, voice);
+    state.activeKeys.set(voiceId, index);
+    playAngklungShake(voice, context, bus, note.frequency);
+    voice.timer = window.setInterval(() => {
+      if (!voice.released) playAngklungShake(voice, context, bus, note.frequency);
+    }, 235);
+    keyboard.querySelector(`[data-index="${index}"]`)?.classList.add("is-playing");
+    $("#audioStatus").textContent = `${Math.round(note.frequency)} HZ · RATTLE`;
+  }
+
+  function playAngklungShake(voice, context, bus, frequency) {
+    const now = context.currentTime + .006;
+    // A quick change of shake direction can create a second tube/frame impact.
+    makeAngklungImpact(voice, context, bus, now, frequency, .92, 0);
+    makeAngklungImpact(voice, context, bus, now + .058, frequency, .62, 1);
+  }
+
+  function makeAngklungImpact(voice, context, bus, time, frequency, strikeLevel, direction) {
+    const nodes = [];
+    const drift = (Math.random() - .5) * .004 + (direction ? .0015 : -.0015);
+    // The long tube carries the note. The short tube sits close to the octave;
+    // the weaker upper modes add the bamboo tube's uneven, non-sine color.
+    const modes = [
+      { ratio: 1.006, level: .34, decay: .62, fm: .028 },
+      { ratio: 2.012, level: .72, decay: 1.12, fm: .024 },
+      { ratio: 2.36, level: .12, decay: .30, fm: .035 },
+      { ratio: 2.84, level: .065, decay: .21, fm: .03 },
+      { ratio: 4.06, level: .055, decay: .40, fm: .02 }
+    ];
+    modes.forEach((mode, index) => {
+      const carrier = context.createOscillator();
+      const modulator = context.createOscillator();
+      const modDepth = context.createGain();
+      const envelope = context.createGain();
+      const modeFrequency = frequency * mode.ratio * (1 + drift * (index + 1));
+      const duration = mode.decay * (index === 1 ? 1 + direction * .12 : 1);
+      carrier.type = "sine";
+      carrier.frequency.setValueAtTime(modeFrequency, time);
+      modulator.type = "sine";
+      modulator.frequency.setValueAtTime(modeFrequency * (1.37 + direction * .025), time);
+      modDepth.gain.setValueAtTime(modeFrequency * mode.fm, time);
+      envelope.gain.setValueAtTime(.0001, time);
+      envelope.gain.linearRampToValueAtTime(mode.level * strikeLevel, time + .0015);
+      envelope.gain.exponentialRampToValueAtTime(.0001, time + duration);
+      modulator.connect(modDepth).connect(carrier.frequency);
+      carrier.connect(envelope).connect(bus);
+      carrier.start(time);
+      modulator.start(time);
+      carrier.stop(time + duration + .035);
+      modulator.stop(time + duration + .035);
+      nodes.push(carrier, modulator, modDepth, envelope);
+    });
+
+    const burstLength = .014;
+    const buffer = context.createBuffer(1, Math.max(128, Math.floor(context.sampleRate * burstLength)), context.sampleRate);
+    const samples = buffer.getChannelData(0);
+    for (let i = 0; i < samples.length; i++) samples[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / samples.length, 2);
+    const impact = context.createBufferSource();
+    const body = context.createBiquadFilter();
+    const impactGain = context.createGain();
+    impact.buffer = buffer;
+    body.type = "bandpass";
+    body.frequency.setValueAtTime(direction ? 2050 : 1560, time);
+    body.Q.value = .68;
+    impactGain.gain.setValueAtTime(.0001, time);
+    impactGain.gain.linearRampToValueAtTime(.115 * strikeLevel, time + .001);
+    impactGain.gain.exponentialRampToValueAtTime(.0001, time + .028);
+    impact.connect(body).connect(impactGain).connect(bus);
+    impact.start(time);
+    impact.stop(time + burstLength);
+    nodes.push(impact, body, impactGain);
+
+    voice.nodes.push(...nodes);
+    window.setTimeout(() => {
+      nodes.forEach((node) => { try { node.disconnect(); } catch (_) {} });
+      voice.nodes = voice.nodes.filter((node) => !nodes.includes(node));
+    }, 1550);
+  }
+
   function makeNoise(context, duration, cutoff) {
     const bufferSize = Math.max(256, Math.floor(context.sampleRate * duration));
     const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
@@ -224,7 +319,18 @@
     const index = state.activeKeys.get(voiceId);
     const { context } = state.audio;
     const now = context.currentTime;
-    const release = state.instrument.release;
+    const release = voice.release;
+    if (state.instrument.family === "bamboo") {
+      window.clearInterval(voice.timer);
+      window.setTimeout(() => {
+        voice.nodes.forEach((node) => { try { node.disconnect(); } catch (_) {} });
+        state.voices.delete(voiceId);
+      }, 1450);
+      state.activeKeys.delete(voiceId);
+      if (![...state.activeKeys.values()].includes(index)) keyboard.querySelector(`[data-index="${index}"]`)?.classList.remove("is-playing");
+      if (!state.activeKeys.size) $("#audioStatus").textContent = "AUDIO AKTIF";
+      return;
+    }
     voice.nodes.forEach((node) => {
       if (node instanceof OscillatorNode) {
         try { node.stop(now + Math.max(.05, release)); } catch (_) {}
